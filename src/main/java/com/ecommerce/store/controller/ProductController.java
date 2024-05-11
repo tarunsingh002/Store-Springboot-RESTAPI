@@ -37,7 +37,7 @@ public class ProductController {
 
     @GetMapping("/api/v1/all/getproducts")
     public ProductResponse getProducts(@RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-                                       @RequestParam(value = "pageSize", defaultValue = "6", required = false) int pageSize,
+                                       @RequestParam(value = "pageSize", defaultValue = "9", required = false) int pageSize,
                                        @RequestParam(value = "sortBy", defaultValue = "productId", required = false) String sortBy,
                                        @RequestParam(value = "direction", defaultValue = "asc", required = false) String direction) {
         return service.getProducts(pageSize, pageNumber, sortBy, direction);
@@ -46,7 +46,7 @@ public class ProductController {
 
     @PostMapping("/api/v1/all/filterproducts")
     public ProductResponse filterProducts(@RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-                                          @RequestParam(value = "pageSize", defaultValue = "6", required = false) int pageSize,
+                                          @RequestParam(value = "pageSize", defaultValue = "9", required = false) int pageSize,
                                           @RequestParam(value = "sortBy", defaultValue = "productId", required = false) String sortBy,
                                           @RequestParam(value = "direction", defaultValue = "asc", required = false) String direction,
                                           @RequestParam(value = "searchTerm", defaultValue = "", required = false) String searchTerm,
