@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class Product implements Comparable<Product> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int productId;
@@ -23,4 +23,9 @@ public class Product {
     private String url;
     private String specification;
     private float price;
+
+    @Override
+    public int compareTo(Product o) {
+        return productId - o.productId;
+    }
 }

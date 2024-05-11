@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "https://store4.vercel.app", maxAge = 3600)
+//@CrossOrigin(origins = "https://store4.vercel.app", maxAge = 3600)
 //@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 public class UserController {
     @Autowired

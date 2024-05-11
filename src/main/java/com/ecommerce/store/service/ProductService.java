@@ -1,11 +1,20 @@
 package com.ecommerce.store.service;
 
+import com.ecommerce.store.dto.ProductResponse;
 import com.ecommerce.store.entity.Product;
 import com.ecommerce.store.repository.ProductRepository;
+import com.ecommerce.store.specification.ProductSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ProductService {
@@ -17,8 +26,95 @@ public class ProductService {
         return repository.save(product);
     }
 
-    public List<Product> getProducts() {
-        return repository.findAll();
+    public ProductResponse getProducts(int pageSize, int pageNumber, String sortBy, String direction) {
+
+        if (pageNumber != -1) {
+            Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+            Pageable p = PageRequest.of(pageNumber, pageSize, sort);
+
+            Page<Product> pageProduct = repository.findAll(p);
+
+            ProductResponse productResponse = ProductResponse.builder().products(pageProduct.getContent())
+                    .lastPage(pageProduct.isLast()).pageNumber(pageProduct.getNumber())
+                    .totalElements(pageProduct.getTotalElements()).pageSize(pageProduct.getSize())
+                    .totalPages(pageProduct.getTotalPages()).build();
+
+            return productResponse;
+        } else {
+
+            List<Product> products = repository.findAll();
+            return ProductResponse.builder().products(products)
+                    .lastPage(true).pageNumber(-1)
+                    .totalElements(products.size()).pageSize(products.size())
+                    .totalPages(1).build();
+        }
+
+    }
+
+    public ProductResponse filterProducts(int pageSize, int pageNumber, String searchTerm, List<String> brands, List<String> categories, String sortBy, String direction) {
+        Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Pageable p = PageRequest.of(pageNumber, pageSize, sort);
+
+        Specification<Product> brandsSpecification = null;
+        for (String brand : brands) {
+            Specification<Product> brandSpecification = ProductSpecification.brandContains(brand);
+            if (brandsSpecification == null) {
+                brandsSpecification = brandSpecification;
+            } else {
+                brandsSpecification = brandsSpecification.or(brandSpecification);
+            }
+        }
+
+        Specification<Product> categoriesSpecification = null;
+
+        for (String category : categories) {
+            Specification<Product> categorySpecification = ProductSpecification.categoryContains(category);
+            if (categoriesSpecification == null) {
+                categoriesSpecification = categorySpecification;
+            } else {
+                categoriesSpecification = categoriesSpecification.or(categorySpecification);
+            }
+        }
+
+        Specification<Product> searchSpecification = null;
+
+        if (searchTerm.trim().length() != 0) {
+            Specification<Product> searchBrandSpecification = ProductSpecification.brandContains(searchTerm);
+            Specification<Product> searchCategorySpecification = ProductSpecification.categoryContains(searchTerm);
+            Specification<Product> searchNameSpecification = ProductSpecification.nameContains(searchTerm);
+            searchSpecification = searchBrandSpecification
+                    .or(searchCategorySpecification)
+                    .or(searchNameSpecification);
+        }
+
+
+        Page<Product> pageProduct = repository.findAll(p);
+
+        Specification<Product> combinedSpecification = null;
+
+        if (brandsSpecification != null && categoriesSpecification != null && searchSpecification != null)
+            combinedSpecification = brandsSpecification.and(categoriesSpecification).and(searchSpecification);
+        else if (brandsSpecification == null && categoriesSpecification != null && searchSpecification != null)
+            combinedSpecification = categoriesSpecification.and(searchSpecification);
+        else if (brandsSpecification == null && categoriesSpecification == null && searchSpecification != null)
+            combinedSpecification = searchSpecification;
+        else if (brandsSpecification == null && categoriesSpecification != null && searchSpecification == null)
+            combinedSpecification = categoriesSpecification;
+        else if (brandsSpecification != null && categoriesSpecification == null && searchSpecification == null)
+            combinedSpecification = brandsSpecification;
+        else if (brandsSpecification != null && categoriesSpecification == null && searchSpecification != null)
+            combinedSpecification = brandsSpecification.and(searchSpecification);
+        else if (brandsSpecification != null && categoriesSpecification != null && searchSpecification == null)
+            combinedSpecification = brandsSpecification.and(categoriesSpecification);
+
+
+        pageProduct = combinedSpecification != null ? repository.findAll(combinedSpecification, p) : pageProduct;
+
+        return ProductResponse.builder().products(pageProduct.getContent()).totalPages(pageProduct.getTotalPages())
+                .totalElements(pageProduct.getTotalElements()).lastPage(pageProduct.isLast())
+                .pageSize(pageProduct.getSize()).pageNumber(pageProduct.getNumber()).build();
+
     }
 
     public Product getProductById(int id) {

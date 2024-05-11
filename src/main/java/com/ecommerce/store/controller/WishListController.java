@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@CrossOrigin(origins = "https://store4.vercel.app", maxAge = 3600)
+//@CrossOrigin(origins = "https://store4.vercel.app", maxAge = 3600)
 //@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 public class WishListController {
 

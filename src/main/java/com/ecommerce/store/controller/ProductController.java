@@ -1,15 +1,19 @@
 package com.ecommerce.store.controller;
 
+import com.ecommerce.store.dto.FilterDto;
+import com.ecommerce.store.dto.ProductResponse;
 import com.ecommerce.store.entity.Product;
 import com.ecommerce.store.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
-@CrossOrigin(origins = "https://store4.vercel.app", maxAge = 3600)
-//@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 public class ProductController {
 
     @Autowired
@@ -32,9 +36,25 @@ public class ProductController {
     }
 
     @GetMapping("/api/v1/all/getproducts")
-    public List<Product> getProducts() {
-        return service.getProducts();
+    public ProductResponse getProducts(@RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
+                                       @RequestParam(value = "pageSize", defaultValue = "6", required = false) int pageSize,
+                                       @RequestParam(value = "sortBy", defaultValue = "productId", required = false) String sortBy,
+                                       @RequestParam(value = "direction", defaultValue = "asc", required = false) String direction) {
+        return service.getProducts(pageSize, pageNumber, sortBy, direction);
     }
+
+
+    @PostMapping("/api/v1/all/filterproducts")
+    public ProductResponse filterProducts(@RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
+                                          @RequestParam(value = "pageSize", defaultValue = "6", required = false) int pageSize,
+                                          @RequestParam(value = "sortBy", defaultValue = "productId", required = false) String sortBy,
+                                          @RequestParam(value = "direction", defaultValue = "asc", required = false) String direction,
+                                          @RequestParam(value = "searchTerm", defaultValue = "", required = false) String searchTerm,
+                                          @RequestBody FilterDto filterDto
+    ) {
+        return service.filterProducts(pageSize, pageNumber, searchTerm, filterDto.getBrands(), filterDto.getCategories(), sortBy, direction);
+    }
+
 
     @GetMapping("/api/v1/all/getproduct/{id}")
     public Product getProduct(@PathVariable int id) {
