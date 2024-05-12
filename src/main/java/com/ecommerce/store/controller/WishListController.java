@@ -46,7 +46,7 @@ public class WishListController {
         } else return null;
     }
 
-    @DeleteMapping("api/v1/user/deleteproduct/{id}")
+    @DeleteMapping("/api/v1/user/deleteproduct/{id}")
     public String removeProduct(@PathVariable int id, @RequestHeader(
             "Authorization") String token) {
         token = token.substring(7);
@@ -54,6 +54,16 @@ public class WishListController {
         if (userService.userExists(userEmail)) {
             User user = (User) userService.loadUserByUsername(userEmail);
             return wishListService.removeProduct(id, user);
+        } else return null;
+    }
+
+    @GetMapping("/api/v1/user/iswishlisted/{id}")
+    public String isProductWishListed(@PathVariable int id, @RequestHeader("Authorization") String token) {
+        token = token.substring(7);
+        String userEmail = jwtService.extractUsername(token);
+        if (userService.userExists(userEmail)) {
+            User user = (User) userService.loadUserByUsername(userEmail);
+            return wishListService.isProductWishListed(id, user);
         } else return null;
     }
 }

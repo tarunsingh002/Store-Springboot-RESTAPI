@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class WishListService {
@@ -45,5 +46,18 @@ public class WishListService {
 
     public List<WishList> getAllWishLists() {
         return repository.findAll();
+    }
+
+    public String isProductWishListed(int id, User user) {
+        WishList wishList = repository.findByUser(user);
+        Set<Product> products = wishList.getProducts();
+
+        boolean isWishlisted = false;
+
+        Set<Product> wp = products.stream().filter(p -> p.getProductId() == id).collect(Collectors.toSet());
+        if (wp.size() > 0)
+            return "Product is wishlisted";
+        else
+            return "Product is not wishlisted";
     }
 }

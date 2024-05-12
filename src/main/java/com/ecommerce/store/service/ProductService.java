@@ -34,12 +34,10 @@ public class ProductService {
 
             Page<Product> pageProduct = repository.findAll(p);
 
-            ProductResponse productResponse = ProductResponse.builder().products(pageProduct.getContent())
+            return ProductResponse.builder().products(pageProduct.getContent())
                     .lastPage(pageProduct.isLast()).pageNumber(pageProduct.getNumber())
                     .totalElements(pageProduct.getTotalElements()).pageSize(pageProduct.getSize())
                     .totalPages(pageProduct.getTotalPages()).build();
-
-            return productResponse;
         } else {
 
             List<Product> products = repository.findAll();
