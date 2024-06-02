@@ -21,14 +21,14 @@ public class WishListService {
 
     public String addProduct(User user, Product product) {
         WishList wishList = repository.findByUser(user);
-        Set<Product> products = wishList.getProducts();
+        List<Product> products = wishList.getProducts();
         products.add(product);
         wishList.setProducts(products);
         repository.save(wishList);
         return "Product added to Wishlist";
     }
 
-    public Set<Product> getWishList(User user) {
+    public List<Product> getWishList(User user) {
         return repository
                 .findByUser(user)
                 .getProducts();
@@ -37,7 +37,7 @@ public class WishListService {
 
     public String removeProduct(int id, User user) {
         WishList wishList = repository.findByUser(user);
-        Set<Product> products = wishList.getProducts();
+        List<Product> products = wishList.getProducts();
         products.remove(productService.getProductById(id));
         wishList.setProducts(products);
         repository.save(wishList);
@@ -50,7 +50,7 @@ public class WishListService {
 
     public String isProductWishListed(int id, User user) {
         WishList wishList = repository.findByUser(user);
-        Set<Product> products = wishList.getProducts();
+        List<Product> products = wishList.getProducts();
 
         boolean isWishlisted = false;
 

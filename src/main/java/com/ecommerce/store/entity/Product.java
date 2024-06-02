@@ -1,15 +1,17 @@
 package com.ecommerce.store.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product implements Comparable<Product> {
@@ -23,6 +25,10 @@ public class Product implements Comparable<Product> {
     private String url;
     private String specification;
     private float price;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "products")
+    private List<WishList> wishLists = new ArrayList<>();
 
     @Override
     public int compareTo(Product o) {

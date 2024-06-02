@@ -1,14 +1,17 @@
 package com.ecommerce.store.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class WishList {
@@ -22,8 +25,8 @@ public class WishList {
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "wishlistId", referencedColumnName = "id")
-    Set<Product> products;
-
+    @ManyToMany
+    @JoinTable(name = "wishlist_product", joinColumns = @JoinColumn(name = "id"),
+            inverseJoinColumns = @JoinColumn(name = "productId"))
+    List<Product> products = new ArrayList<>();
 }

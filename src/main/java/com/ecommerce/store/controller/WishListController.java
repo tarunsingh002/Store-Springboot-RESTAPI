@@ -26,7 +26,7 @@ public class WishListController {
     private WishListService wishListService;
 
     @GetMapping("/api/v1/user/getwishlist")
-    public Set<Product> getWishList(@RequestHeader("Authorization") String token) {
+    public List<Product> getWishList(@RequestHeader("Authorization") String token) {
         token = token.substring(7);
         String userEmail = jwtService.extractUsername(token);
         if (userService.userExists(userEmail)) {

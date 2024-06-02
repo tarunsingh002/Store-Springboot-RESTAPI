@@ -47,8 +47,6 @@ public class AuthService {
             user = userService.addUser(user);
             WishList wishList = new WishList();
             wishList.setUser(user);
-            Set<Product> products = new HashSet<Product>();
-            wishList.setProducts(products);
             wishList = wishListRepository.save(wishList);
             return signIn(new SignInRequest(signUpRequest.getEmail(), signUpRequest.getPassword()));
         }
